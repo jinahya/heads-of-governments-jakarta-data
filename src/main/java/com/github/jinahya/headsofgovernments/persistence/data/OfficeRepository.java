@@ -16,7 +16,8 @@ import java.util.Optional;
  * A repository of {@link Office}, whose identifier is its {@code country}.
  */
 @Repository
-public interface OfficeRepository extends DataRepository<Office, String> {
+public interface OfficeRepository
+        extends DataRepository<Office, String> {
 
     /**
      * Finds all offices, in the specified order.
