@@ -1,10 +1,6 @@
 package com.github.jinahya.headsofgovernments.persistence.data;
 
 import com.github.jinahya.headsofgovernments.persistence.Head;
-import io.quarkus.test.junit.QuarkusTest;
-import jakarta.data.Order;
-import jakarta.data.Sort;
-import jakarta.data.page.PageRequest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -13,11 +9,20 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * A {@link QuarkusTest} of {@link HeadRepository}, against {@code heads_of_governments.sqlite3}, a
- * test resource, as {@code application.properties} configures it; no {@code persistence.xml}.
+ * A {@link _Repository_QuarkusTest} of {@link HeadRepository}.
  */
-@QuarkusTest
-class HeadRepository_QuarkusTest {
+@io.quarkus.test.junit.QuarkusTest
+class HeadRepository_QuarkusTest
+        extends _Repository_QuarkusTest<HeadRepository, Head, Long> {
+
+    /**
+     * Creates a new instance.
+     */
+    HeadRepository_QuarkusTest() {
+        super(HeadRepository.class, Head.class, Long.class);
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     @DisplayName("findAll(Order)")
     @Nested
@@ -25,21 +30,23 @@ class HeadRepository_QuarkusTest {
 
         @Test
         void idAsc() {
-            final var heads = repository.findAll(Order.by(Sort.asc("id")));
+            final var heads = repositoryInstance().findAll(
+                    jakarta.data.Order.by(jakarta.data.Sort.asc("id"))
+            );
             assertThat(heads).hasSize(285);
             assertThat(heads).extracting(Head::getId).isSorted();
         }
     }
 
-    @DisplayName("findAll(Order, PageRequest)")
+    @DisplayName("findAll(PageRequest, Order)")
     @Nested
-    class FindAll_Order_PageRequest {
+    class FindAll_PageRequest_Order {
 
         @Test
         void idAsc_firstPage() {
-            final var page = repository.findAll(
-                    Order.by(Sort.asc("id")),
-                    PageRequest.ofSize(10)
+            final var page = repositoryInstance().findAll(
+                    jakarta.data.page.PageRequest.ofSize(10),
+                    jakarta.data.Order.by(jakarta.data.Sort.asc("id"))
             );
             assertThat(page.content()).hasSize(10);
             assertThat(page.content()).extracting(Head::getId).isSorted();
@@ -53,24 +60,27 @@ class HeadRepository_QuarkusTest {
 
         @Test
         void KR() {
-            final var heads = repository.findByCountryOrderByTermStartAscIdAsc("KR");
+            final var heads = repositoryInstance().findByCountryOrderByTermStartAscIdAsc("KR");
             assertThat(heads).hasSize(21);
             assertThat(heads).extracting(Head::getTermStart).isSorted();
             assertThat(heads.getFirst().getName()).isEqualTo("이승만");
         }
     }
 
-    @DisplayName("findAllByOffice(Office, Order, PageRequest)")
+    @DisplayName("findAllByOffice(Office, PageRequest, Order)")
     @Nested
     class FindAllByOffice {
 
         @Test
         void KR_termStartDesc_firstPage() {
-            final var office = officeRepository.findByCountry("KR").orElseThrow();
-            final var page = repository.findAllByOffice(
+            final var office = officeRepository.findById("KR").orElseThrow();
+            final var page = repositoryInstance().findAllByOffice(
                     office,
-                    Order.by(Sort.desc("termStart"), Sort.desc("id")),
-                    PageRequest.ofSize(10)
+                    jakarta.data.page.PageRequest.ofSize(10),
+                    jakarta.data.Order.by(
+                            jakarta.data.Sort.desc("termStart"),
+                            jakarta.data.Sort.desc("id")
+                    )
             );
             assertThat(page.content()).hasSize(10);
             assertThat(page.content()).extracting(Head::getName).startsWith("이재명", "윤석열");
@@ -79,9 +89,6 @@ class HeadRepository_QuarkusTest {
     }
 
     // ---------------------------------------------------------------------------------------------
-    @Inject
-    HeadRepository repository;
-
     @Inject
     OfficeRepository officeRepository;
 }

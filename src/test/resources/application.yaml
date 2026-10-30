@@ -1,0 +1,39 @@
+#
+# Test configuration for heads-of-governments-jakarta-data: heads_of_governments.sqlite3, a class path resource of the
+# heads-of-governments-persistence artifact, opened read-only. No persistence.xml; the entities are indexed.
+#
+quarkus:
+  datasource:
+    # SQLite has no Quarkus JDBC extension of its own; `other`, with the driver named.
+    db-kind: other # default: (unset)
+    jdbc:
+      driver: org.sqlite.JDBC # default: (unset); the db-kind's extension sets it
+      # open_mode=1 opens the database read-only; jdbc.explicit_readonly lets the pool call
+      # Connection#setReadOnly, which the driver refuses otherwise once the connection is open.
+      # default: (unset)
+      url: jdbc:sqlite::resource:heads_of_governments.sqlite3?open_mode=1&jdbc.explicit_readonly=true
+  hibernate-orm:
+    # Hibernate's SQLiteDialect, from hibernate-community-dialects. The database is the fixture; nothing here may touch
+    # its schema.
+    # default: (unset); chosen from the datasource for databases with a Quarkus extension
+    dialect: org.hibernate.community.dialect.SQLiteDialect
+    schema-management:
+      strategy: none # default: none
+    log:
+      # The SQL Hibernate runs, on multiple lines.
+      sql: true # default: false
+      format-sql: true # default: true
+  # The entities are in the upstream jar, which Quarkus indexes only when told to.
+  index-dependency:
+    heads-of-governments-persistence:
+      group-id: io.github.jinahya # default: (unset)
+      artifact-id: heads-of-governments-persistence # default: (unset)
+  log:
+    category:
+      "com.github.jinahya":
+        level: DEBUG # default: inherit (quarkus.log.level, INFO)
+      # The values bound to the parameters of the SQL.
+      "org.hibernate.orm.jdbc.bind":
+        min-level: TRACE # default: inherit (quarkus.log.min-level, DEBUG)
+        level: TRACE # default: inherit (quarkus.log.level, INFO)
+

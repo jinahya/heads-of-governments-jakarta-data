@@ -259,7 +259,7 @@
 
     <!--
       test frameworks ============================================================================
-      Quarkus, with Hibernate ORM, for @QuarkusTest: it starts the persistence unit application.properties configures,
+      Quarkus, with Hibernate ORM, for @QuarkusTest: it starts the persistence unit application.yaml configures,
       and injects the generated repositories, which open their StatelessSession from it.
       -->
     <dependency>
@@ -270,6 +270,12 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!-- application.yaml, instead of application.properties -->
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-config-yaml</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
