@@ -1,7 +1,7 @@
 # heads-of-governments-jakarta-data
 
 Jakarta Data repositories, `OfficeRepository` and `HeadRepository`, for the entities of
-[heads-of-governments-persistence](../heads-of-governments-persistence), implemented by hibernate-processor and tested
+[heads-of-governments-persistence](../../heads-of-governments-persistence), implemented by hibernate-processor and tested
 with `@QuarkusTest`.
 
 ## Why each repository extends `CrudRepository` itself
