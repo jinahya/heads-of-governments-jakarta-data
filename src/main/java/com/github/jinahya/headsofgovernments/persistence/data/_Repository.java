@@ -9,7 +9,7 @@ package com.github.jinahya.headsofgovernments.persistence.data;
  * superinterface other than the built-in ones to have one, a case 1.0 leaves open, and Hibernate
  * Data Repositories follows 1.1. So each repository also extends
  * {@link jakarta.data.repository.CrudRepository} itself, with its own types, e.g.,
- * {@code CrudRepository<Head, Long>}; see the {@code README.md}.
+ * {@code CrudRepository<Head, HeadId>}; see the {@code README.md}.
  *
  * @param <T> the type of the entities.
  * @param <U> the type of the identifiers of the entities.

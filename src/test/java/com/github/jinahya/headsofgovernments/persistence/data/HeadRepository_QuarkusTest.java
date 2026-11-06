@@ -1,6 +1,7 @@
 package com.github.jinahya.headsofgovernments.persistence.data;
 
 import com.github.jinahya.headsofgovernments.persistence.Head;
+import com.github.jinahya.headsofgovernments.persistence.HeadId;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -13,13 +14,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @io.quarkus.test.junit.QuarkusTest
 class HeadRepository_QuarkusTest
-        extends _Repository_QuarkusTest<HeadRepository, Head, Long> {
+        extends _Repository_QuarkusTest<HeadRepository, Head, HeadId> {
 
     /**
      * Creates a new instance.
      */
     HeadRepository_QuarkusTest() {
-        super(HeadRepository.class, Head.class, Long.class);
+        super(HeadRepository.class, Head.class, HeadId.class);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -29,12 +30,15 @@ class HeadRepository_QuarkusTest
     class FindAll_Order {
 
         @Test
-        void idAsc() {
+        void countryAscTermStartAsc() {
             final var heads = repositoryInstance().findAll(
-                    jakarta.data.Order.by(jakarta.data.Sort.asc("id"))
+                    jakarta.data.Order.by(jakarta.data.Sort.asc("country"),
+                                         jakarta.data.Sort.asc("termStart"))
             );
             assertThat(heads).hasSize(285);
-            assertThat(heads).extracting(Head::getId).isSorted();
+            assertThat(heads).isSortedAccordingTo(
+                    java.util.Comparator.comparing((Head h) -> h.getOffice().getCountry())
+                                            .thenComparing(Head::getTermStart));
         }
     }
 
@@ -43,24 +47,27 @@ class HeadRepository_QuarkusTest
     class FindAll_PageRequest_Order {
 
         @Test
-        void idAsc_firstPage() {
+        void countryAscTermStartAsc_firstPage() {
             final var page = repositoryInstance().findAll(
                     jakarta.data.page.PageRequest.ofSize(10),
-                    jakarta.data.Order.by(jakarta.data.Sort.asc("id"))
+                    jakarta.data.Order.by(jakarta.data.Sort.asc("country"),
+                                         jakarta.data.Sort.asc("termStart"))
             );
             assertThat(page.content()).hasSize(10);
-            assertThat(page.content()).extracting(Head::getId).isSorted();
+            assertThat(page.content()).isSortedAccordingTo(
+                    java.util.Comparator.comparing((Head h) -> h.getOffice().getCountry())
+                                            .thenComparing(Head::getTermStart));
             assertThat(page.totalElements()).isEqualTo(285L);
         }
     }
 
-    @DisplayName("findByCountryOrderByTermStartAscIdAsc(String)")
+    @DisplayName("findByCountryOrderByTermStartAsc(String)")
     @Nested
-    class FindByCountryOrderByTermStartAscIdAsc {
+    class FindByCountryOrderByTermStartAsc {
 
         @Test
         void KR() {
-            final var heads = repositoryInstance().findByCountryOrderByTermStartAscIdAsc("KR");
+            final var heads = repositoryInstance().findByCountryOrderByTermStartAsc("KR");
             assertThat(heads).hasSize(21);
             assertThat(heads).extracting(Head::getTermStart).isSorted();
             assertThat(heads.getFirst().getName()).isEqualTo("이승만");
@@ -78,8 +85,7 @@ class HeadRepository_QuarkusTest
                     office,
                     jakarta.data.page.PageRequest.ofSize(10),
                     jakarta.data.Order.by(
-                            jakarta.data.Sort.desc("termStart"),
-                            jakarta.data.Sort.desc("id")
+                            jakarta.data.Sort.desc("termStart")
                     )
             );
             assertThat(page.content()).hasSize(10);
