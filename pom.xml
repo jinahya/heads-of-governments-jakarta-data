@@ -81,7 +81,7 @@
     <version.io.quarkus.platform>3.40.1.1</version.io.quarkus.platform>
 
     <!-- The sibling, at the unified version: `./mvnw -DskipTests install` it to pick up a change there. -->
-    <version.heads-of-governments-persistence>0.6.11</version.heads-of-governments-persistence>
+    <version.heads-of-governments-persistence>0.6.12-SNAPSHOT</version.heads-of-governments-persistence>
 
     <!-- The versions below are upstream's, where it names the same. -->
     <!-- https://central.sonatype.com/artifact/org.projectlombok/lombok/versions -->
